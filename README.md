@@ -22,3 +22,21 @@ To use oauth you need to get an client_id and maybe a client_secret first. A gui
 
 ### ecarupGrpcApi
 Simple console (.net C#) example how to use the ecarup gRPC API. The example uses the oauth client credentials flow to get an access token. 
+
+ - **Use case:**  Simple APP that needs access to ecarup for one user
+
+### ecarupGrpcWebExample
+ASP.net Blazor Example with Code-First gRPC between Client (Webassembly) and Server). Uses the oauth Confidential flow. 
+
+ - **Use case:**  Web Apps that need access to ecarup for multiple users. 
+
+#### Get started with ecarupGrpcWebExample - Configure Authenication
+1. Go to www.smart-me.com
+2. Login with your account that you want to use as account for your application
+3. Click on the username -> settings -> API & Access
+4. Create a new "Confidential" OAuth Application
+5. Enter the Redirect URL of your application. E.g. for the local development it will be https://localhost:7118/authorization-code/callback
+6. Click on create
+7. Copy the client id and the client secret into the appsettings.json in ecarupApiExamples\ecarupGrpcWebExample\Server\ in the oauth section.
+
+![image](https://github.com/eCarUp/ecarup-api-examples/assets/46069751/add50ec4-5472-4f6d-ad41-0fd92db523c0)
