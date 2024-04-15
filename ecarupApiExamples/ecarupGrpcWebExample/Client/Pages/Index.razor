@@ -1,0 +1,59 @@
+﻿@page "/"
+@inject NavigationManager NavManager
+@using Microsoft.AspNetCore.WebUtilities
+@using ecarupGrpcWebExample.Contract.Authentication;
+@using ecarupGrpcWebExample.Contract.ecarup
+@inject IAuthService AuthService
+@inject AuthStateProvider AuthProvider
+@inject IConnectorService ConnectorsServiceFacade
+
+<PageTitle>ecarup Connectors</PageTitle>
+
+
+<MudContainer>  
+  
+    <AuthorizeView>
+        <NotAuthorized>
+            <MudText Typo="Typo.h3">Please login</MudText>
+        </NotAuthorized>
+
+        <Authorized>
+            <MudText Typo="Typo.h3">ecarup connectors</MudText>
+
+             <MudTable Items="@Connectors" Context="connector" Hover="true" Loading="@_loading" LoadingProgressColor="Color.Info">
+                <HeaderContent>
+                    <MudTh>Station Name</MudTh>
+                    <MudTh>Connector Name</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="StationName">@connector.StationName</MudTd>
+                    <MudTd DataLabel="ConnectorName">@connector.ConnectorName</MudTd>
+                </RowTemplate>               
+                <PagerContent>
+                    <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"/>
+                </PagerContent>
+            </MudTable>
+
+        </Authorized>
+    </AuthorizeView>
+</MudContainer>
+
+
+
+@code {
+    private IEnumerable<ConnectorDto> Connectors = new List<ConnectorDto>();
+
+    private bool _loading;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+        await LoadStations();
+        _loading = false;
+    }
+
+    private async Task LoadStations()
+    {
+        Connectors = await ConnectorsServiceFacade.GetAll();
+    }  
+}

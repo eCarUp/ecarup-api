@@ -1,0 +1,52 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="ecarupApi\protobuf\charginghistory.proto" />
+    <None Remove="ecarupApi\protobuf\station.proto" />
+    <None Remove="google\api\annotations.proto" />
+    <None Remove="google\api\http.proto" />
+    <None Remove="google\api\timestamp.proto" />
+  </ItemGroup>
+
+  <ItemGroup>
+      <PackageReference Include="Google.Protobuf" Version="3.26.1" />
+      <PackageReference Include="Grpc.AspNetCore.Web" Version="2.61.0" />
+      <PackageReference Include="Grpc.Net.Client" Version="2.61.0" />
+      <PackageReference Include="Grpc.Tools" Version="2.62.0">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.2" />
+      <PackageReference Include="Npgsql" Version="8.0.2" />
+      <PackageReference Include="PDFsharp" Version="6.0.0" />
+      <PackageReference Include="protobuf-net.Grpc.AspNetCore" Version="1.1.1" />
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.4.0" />
+      <PackageReference Include="System.Security.Cryptography.Algorithms" Version="4.3.1" />      
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Client\ecarupGrpcWebExample.Client.csproj" />
+    <ProjectReference Include="..\Contract\ecarupGrpcWebExample.Contract.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="ecarupApi\protobuf\charginghistory.proto" GrpcServices="Client" />
+    <Protobuf Include="ecarupApi\protobuf\station.proto" GrpcServices="Client" />
+    <Protobuf Include="google\api\annotations.proto" GrpcServices="Client" />
+    <Protobuf Include="google\api\http.proto" GrpcServices="Client" />
+    <Protobuf Include="google\api\timestamp.proto" GrpcServices="Client" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\PublishProfiles\" />
+    <Folder Include="Properties\ServiceDependencies\" />
+  </ItemGroup>
+
+
+</Project>

@@ -1,3 +1,9 @@
 ecarupApiExamples/.vs/
 ecarupApiExamples/ecarupGrpcApi/bin/
 ecarupApiExamples/ecarupGrpcApi/obj/
+ecarupApiExamples/ecarupGrpcWebExample/Client/bin/
+ecarupApiExamples/ecarupGrpcWebExample/Client/obj/
+ecarupApiExamples/ecarupGrpcWebExample/Server/bin/
+ecarupApiExamples/ecarupGrpcWebExample/Server/obj/
+ecarupApiExamples/ecarupGrpcWebExample/Contract/bin/
+ecarupApiExamples/ecarupGrpcWebExample/Contract/obj/

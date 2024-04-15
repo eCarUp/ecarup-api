@@ -1,0 +1,19 @@
+﻿@using ecarupGrpcWebExample.Contract.Authentication;
+
+       
+
+<AuthorizeView>
+    <Authorized>
+
+        <MudMenu Label="@(context.User.Identity.Name!)">
+            <MudButton Href="@SharedConstants.LogoutUrl" Color="Color.Inherit">Log out</MudButton>
+        </MudMenu>
+       
+    </Authorized>
+    <NotAuthorized>
+        
+        <MudButton Href="@SharedConstants.LoginUrl" Color="Color.Inherit" Edge="Edge.End">Log in</MudButton>
+      
+    </NotAuthorized>
+</AuthorizeView>
+
