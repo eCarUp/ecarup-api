@@ -1,0 +1,144 @@
+syntax = "proto3";
+
+option csharp_namespace = "ecarupGrpcApi";
+
+package protos.station;
+
+service StationProtoService {
+  // Gets all stations of the user
+  rpc GetAll (GetAllStationsRequest) returns (StationsReply);
+
+  // Gets the details of a station
+  rpc Get (GetStationRequest) returns (Station);
+}
+
+// (optional) Filter for the stations
+message GetAllStationsRequest
+{  
+  optional StationsFilter filter = 1; 
+}
+
+//
+message GetStationRequest
+{  
+  string id = 1; 
+}
+
+message Station {
+  // The ID of the station
+  string id = 1;
+  // The name of the station
+  string name = 2;
+  // The serialnumber of the station
+  int64 serialnumber = 3;
+  // The coordinate of the station (latitude)
+  double latitude = 4;
+  // The coordinate of the station (latitude)
+  double longitude = 5;
+  // All connectors of the stations (1-n)
+  repeated Connector connectors = 6;
+}
+
+message Connector
+{
+    // The ID of the connector. Same as the smart-me device id
+    string id = 1;
+    // The number of the connector
+    int32 number = 2;   
+    // The name of the connector
+    string name = 3;
+    // The description of the connector
+    string description = 4;
+    // The type of the plug provided
+    PlugType plugtype = 5;
+    // The maximum power in W
+    int32 maxpower = 6;
+
+    optional ConnectorState state = 7;
+
+    // The counter value "active energy import". Obis: 1.8.0. in Wh
+    optional double active_energy_import = 8;
+
+    // The counter value "active energy export". Obis: 2.8.0. in Wh
+    optional double active_energy_export = 9;
+
+    // The active power. Sum of all phases. In W
+    optional double active_power_total = 10;
+
+    // The current phase L1. In A
+    optional double current_l1 = 11;
+
+    // The current phase L2. In A
+    optional double current_l2 = 12;
+
+    // The current phase L3. In A
+    optional double current_l3 = 13;
+
+    // The access configuration of the connector
+    ConnectorAccess access = 14;
+}
+
+message StationsReply {
+  repeated Station stations = 1;
+}
+
+enum PlugType{
+    PLUG_TYPE_UNKNOWN = 0;
+    PLUG_TYPE_TYPE2 = 1;
+    PLUG_TYPE_SCHUKO = 2;
+    PLUG_TYPE_SWISS = 3;
+    PLUG_TYPE_UK = 4;
+    PLUG_TYPE_CCS = 5;
+    PLUG_TYPE_CHADEMO = 6; 
+ }
+ 
+  // (optional) Filter for the stations.
+  // - 0: (OwnedAndManagedAndViewed, default) Gets all stations of this user and all stations this user has management or view access to
+  // - 1: (Owned) Gets only the stations of this user
+  // - 2: (Managed) Gets only the stations of other users this user has management access to
+  // - 3: (Viewed) Gets only the stations of other users this user has view access to
+enum StationsFilter{
+    // Gets all stations of this user and all stations this user has management or view access to (default)
+    STATIONS_FILTER_OWNEDMANAGEDANDVIEWED = 0;
+    // Gets only the stations of this user
+    STATIONS_FILTER_OWNED = 1;
+    // Gets only the stations of other users this user has management access to
+    STATIONS_FILTER_MANAGED = 2;
+     // Gets only the stations of other users this user has view access to
+    STATIONS_FILTER_VIEWED = 3;
+}
+
+enum ConnectorState
+{
+    AVAILABLE = 0;
+    PREPARING = 1;
+    CHARGING = 2;
+    SUSPENDEDEVSE = 3;
+    SUSPENDEDEV = 4;
+    FINISHING = 5;
+    RESERVED = 6;
+    UNAVAILABLE = 7;
+    FAULTED = 8;
+    DEACTIVATIONPENDING = 99;
+}
+
+message ConnectorAccess
+{
+    //Access type of the connector
+    ConnectorAccessType type = 1;
+
+    //Special users of the connector
+    repeated ConnectorAccessUser special_users = 2;
+}
+
+enum ConnectorAccessType
+{
+  PUBLIC = 0;
+  LIMITED = 1;
+  PRIVATE = 2;
+}
+
+message ConnectorAccessUser
+{
+  string email = 1;
+}

@@ -1,0 +1,97 @@
+syntax = "proto3";
+
+option csharp_namespace = "ecarupGrpcApi";
+
+import "google/api/timestamp.proto";
+
+package protos.charginghistory;
+
+service ChargingHistoryProtoService {
+  // Gets the charging history of a station
+  rpc GetForStation (GetChargingHistoryForStationRequest) returns (ChargingHistoryReply);  
+
+  // Gets the charging history of this user
+  rpc GetForDriver (GetChargingHistoryForDriverRequest) returns (ChargingHistoryReply);  
+}
+
+message GetChargingHistoryForStationRequest
+{  
+  string id = 1; 
+  optional string pagination_cursor = 2;
+}
+
+message GetChargingHistoryForDriverRequest
+{  
+  optional string pagination_cursor = 2;
+}
+
+message ChargingHistoryReply {
+  optional string pagination_cursor = 1;
+  repeated ChargingHistory histories = 2;
+}
+
+message ChargingHistory {
+  // The ID of the history item
+  string id = 1; 
+  // The station
+  ChargingHistoryStation station = 2;
+  // The start time of the charging
+  google.protobuf.Timestamp start_time = 3;
+  // The charging duration in seconds
+  int32 duration_s = 4;
+  // The consumption of the charging in kWh
+  double consumption_kwh = 5;
+  // The costs for the driver
+  optional ChargingHistoryCostsOrEarnings driver_costs = 6;
+  // The earnings of the charging for the station owner
+  optional ChargingHistoryCostsOrEarnings station_owner_earnings = 7;
+  // The digitally signed transaction data received from the station
+  optional ChargingHistorySignedTransaction signed_transaction = 8;
+  // The driver identifier (either an email address or an anonymized identifier)
+  optional string driverIdentifier = 9;
+}
+
+message ChargingHistoryCostsOrEarnings{
+  // The currency of the charging 
+  string currency = 1;
+  // The costs/earnings for the energy
+  double energy = 2;
+  // The costs/earnings for the parking time
+  double time = 3;
+}
+
+message ChargingHistoryStation{
+  // The ID of the station
+  string id = 1;
+  // The name of the station when the charging has happened
+  string name = 2;
+  // the number of the connector of the station
+  int32 connector_number = 3;
+  // the ID of the station owner
+  optional int64 owner_id = 4;
+  // The pricing information of the station at the time of the charging
+  ChargingHistoryStationPriceInformation price_information = 5;
+}
+
+message ChargingHistoryStationPriceInformation{
+  // The currency of the station 
+  string currency = 1;
+  // The price per kWh of the station
+  double price_per_kwh = 2;
+  // The price per Hour (time)
+  double price_per_h = 3;
+}
+
+message ChargingHistorySignedTransaction{
+  // The format of the signed transaction
+  SignedTransactionFormat format = 1;
+  // the data of the signed transaction
+  string data = 2;
+}
+
+
+enum SignedTransactionFormat
+{
+    UNKNOWN = 0;
+    OCMF = 1;
+}
