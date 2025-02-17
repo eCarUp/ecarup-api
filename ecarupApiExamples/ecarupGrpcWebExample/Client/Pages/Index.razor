@@ -11,7 +11,7 @@
 
 
 <MudContainer>  
-  
+
     <AuthorizeView>
         <NotAuthorized>
             <MudText Typo="Typo.h3">Please login</MudText>
@@ -20,7 +20,7 @@
         <Authorized>
             <MudText Typo="Typo.h3">ecarup connectors</MudText>
 
-             <MudTable Items="@Connectors" Context="connector" Hover="true" Loading="@_loading" LoadingProgressColor="Color.Info">
+            <MudTable Items="@Connectors" Context="connector" Hover="true" Loading="@_loading" LoadingProgressColor="Color.Info">
                 <HeaderContent>
                     <MudTh>Station Name</MudTh>
                     <MudTh>Connector Name</MudTh>
@@ -34,6 +34,26 @@
                 </PagerContent>
             </MudTable>
 
+
+            <MudText Typo="Typo.h3">Active chargings</MudText>
+            <MudTable Items="@ActiveChargings" Context="charging" Hover="true" Loading="@_loading" LoadingProgressColor="Color.Info">
+                <HeaderContent>
+                    <MudTh>Station</MudTh>
+                    <MudTh>DriverIdentifier</MudTh>
+                    <MudTh>Status</MudTh>
+                    <MudTh>Duration (s)</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Station">@GetConnectorName(charging)</MudTd>
+                    <MudTd DataLabel="DriverIdentifier">@charging.DriverIdentifier</MudTd>
+                    <MudTd DataLabel="Status">@charging.Status</MudTd>
+                    <MudTd DataLabel="Duration">@charging.Duration.Seconds</MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }" />
+                </PagerContent>
+            </MudTable>
+
         </Authorized>
     </AuthorizeView>
 </MudContainer>
@@ -42,6 +62,7 @@
 
 @code {
     private IEnumerable<ConnectorDto> Connectors = new List<ConnectorDto>();
+    private List<ActiveChargingDto> ActiveChargings = new List<ActiveChargingDto>();
 
     private bool _loading;
 
@@ -55,5 +76,38 @@
     private async Task LoadStations()
     {
         Connectors = await ConnectorsServiceFacade.GetAll();
-    }  
+        await LoadActiveChargingsForConnectors();
+    }
+
+    private string GetConnectorName(ActiveChargingDto activeChargingDto)
+    {
+        var connector = Connectors.FirstOrDefault(c => 
+            c.StationId == activeChargingDto.StationId &&
+            c.ConnectorId == activeChargingDto.ConnectorId);
+        return $"{connector?.StationName} {connector?.ConnectorName}";
+    }
+
+
+    private async Task LoadActiveChargingsForConnectors()
+    {
+        foreach (var connector in Connectors)
+        {
+            try
+            {
+                var request = new GetActiveChargingRequestDto
+                    {
+                        StationId = connector.StationId,
+                        ConnectorId = connector.ConnectorId
+                    };
+
+                var activeChargings = await ConnectorsServiceFacade.GetActiveChargingForConnector(request);
+                ActiveChargings.Add(activeChargings);
+            }
+            catch (Exception)
+            {
+                // Ignore the exception here. It will throw one if we don't have a charging for the connector
+            }
+        }
+    }
 }
+    

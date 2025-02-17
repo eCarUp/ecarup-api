@@ -1,0 +1,84 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "PublicApi.ActiveChargings";
+
+import "google/api/annotations.proto";
+import "google/api/timestamp.proto";
+
+package protos.activeCharging;
+
+service ActiveChargingProtoService {
+  rpc GetForConnector (GetForConnectorRequest) returns (ActiveChargingResponse) {
+    option (google.api.http) = {
+      get: "/v1/station/{station_id}/connectors/{connector_id}/active-charging"
+    };
+  }
+}
+
+message GetForConnectorRequest {
+  // ID of the station
+  string station_id = 1;
+
+  // ID of the connector
+  string connector_id = 2;
+}
+
+message ActiveChargingResponse {
+  // ID of the charging
+  string id = 1;
+
+  // ID of the user who started the charging
+  string driverIdentifier = 2;
+
+  // Status of the charging
+  ActiveChargingStatus status = 3;
+
+  // UTC time when the charging was started
+  google.protobuf.Timestamp start_time = 4;
+
+  // eCarUp internal meter value when the charging was started in Wh
+  double start_meter_value_wh = 5;
+
+  // Price for the user who started the charging
+  Price price = 6;
+
+  // transaction related information
+  optional Transaction transaction = 7;
+}
+
+message Price {
+  // Currency of the price
+  string currency = 1;
+
+  // Price for energy consumption per kWh
+  double consumptionPerKwh = 2;
+
+  // Price for duration of charging per hour
+  double timePerH = 3;
+}
+
+message Transaction {
+  // ID of the transaction
+  string transaction_id = 1;
+
+  // Meter start value the station sent with the StartTransaction
+  double meter_start_wh = 2;
+
+  // Meter stop value the station sent with the StopTransaction
+  optional double meter_stop_wh = 3;
+
+  // Last Power.Active.Import value the station sent
+  optional double meter_active_power_w = 4;
+
+  // Last Energy.Active.Import.Register value the station sent
+  optional double meter_active_energy_wh = 5;
+}
+
+enum ActiveChargingStatus
+{
+  // Charging is active
+  ACTIVE = 0;
+
+  // Charging has been deactivated and is pending
+  DEACTIVATION_PENDING = 1;
+}

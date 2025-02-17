@@ -38,5 +38,37 @@ namespace ecarupGrpcWebExample.Server.Services
 
             return connectorDtos;
         }
+
+        [Authorize]
+        public async Task<ActiveChargingDto> GetActiveChargingForConnector(
+            GetActiveChargingRequestDto request, 
+            CallContext context = default)
+        {
+            var httpContext = context.ServerCallContext?.GetHttpContext();
+
+            var accessToken = await httpContext?.GetTokenAsync("access_token");
+
+            var ecarupApi = new EcarupApiGrpcClient();
+            var activeChargingResponse = await ecarupApi.GetActiveChargingForConnector(
+                accessToken,
+                request.StationId,
+                request.ConnectorId);
+
+            return new ActiveChargingDto()
+            {
+                Id = activeChargingResponse.Id,
+                StationId = request.StationId,
+                ConnectorId = request.ConnectorId,
+                Status = activeChargingResponse.Status.ToString(),
+                DriverIdentifier = activeChargingResponse.DriverIdentifier,
+                Duration = DateTime.UtcNow - FromGoogleTimestamp(activeChargingResponse.StartTime),
+            };
+        }
+
+        private DateTime FromGoogleTimestamp(Google.Protobuf.WellKnownTypes.Timestamp timestamp)
+        {
+            var epochTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            return epochTime.AddTicks(timestamp.Nanos / 100);
+        }
     }
 }

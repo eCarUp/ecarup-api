@@ -8,5 +8,8 @@ namespace ecarupGrpcWebExample.Contract.ecarup
     {
         [Operation]
         Task<IEnumerable<ConnectorDto>> GetAll(CallContext context = default);
+
+        [Operation]
+        Task<ActiveChargingDto> GetActiveChargingForConnector(GetActiveChargingRequestDto request, CallContext context = default);
     }
 }
